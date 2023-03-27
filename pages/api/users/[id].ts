@@ -30,23 +30,23 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
                     name: name||undefined
                 }
             }))
-        // case'DELETE':
-        //     if(session?.user.level!=='ADMIN') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
+        case'DELETE':
+            if(session?.user.level!=='ADMIN') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
 
-        //     const user = await prisma.user.findFirst({
-        //         where: {
-        //             id: Number(req.query.id)
-        //         }
-        //     })
+            const user = await prisma.user.findFirst({
+                where: {
+                    id: Number(req.query.id)
+                }
+            })
 
-        //     if(!user)return res.status(400).json({ message: "invalid user!" })
+            if(!user)return res.status(400).json({ message: "invalid user!" })
 
-        //     await prisma.user.delete({
-        //         where: {
-        //             id: user.id
-        //         }
-        //     })
-        //     return res.status(200).json({ message: "user successfully deleted!" })
+            await prisma.user.delete({
+                where: {
+                    id: user.id
+                }
+            })
+            return res.status(200).json({ message: "user successfully deleted!" })
         default:
             return res.status(405).json({ message: req.method+' method is not allowed!' })
     }

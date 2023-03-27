@@ -11,24 +11,46 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  password  String
-  name      String
-  level     UserLevel
-  sessions  Session[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id         Int         @id @default(autoincrement())
+  username   String      @unique
+  password   String
+  name       String
+  level      UserLevel
+  sessions   Session[]
+  ownedClass Class[]
+  classMates ClassMate[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
 model Session {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
+  userId    Int
   token     String
   expire    DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ClassMate {
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class   Class  @relation(fields: [classId], references: [id], onDelete: Cascade)
+  userId  Int
+  classId String
+
+  @@id([userId, classId])
+}
+
+model Class {
+  id        String      @id @default(cuid())
+  className String
+  section   String
+  users     ClassMate[]
+  owner     User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   Int
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 enum UserLevel {

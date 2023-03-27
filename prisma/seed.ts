@@ -5,10 +5,10 @@ const prisma = new PrismaClient()
 
 async function main() {
   const master = await prisma.user.upsert({
-    where: { email: process.env.MASTER_EMAIL },
+    where: { username: process.env.MASTER_USERNAME },
     update: {},
     create: {
-        email: process.env.MASTER_EMAIL||'admin',
+        username: process.env.MASTER_USERNAME||'admin',
         password: await argon2.hash(process.env.MASTER_PASSWORD||'admin', {timeCost: 32, parallelism: 2}),
         level: 'ADMIN',
         name: 'Administrator'

@@ -3,13 +3,13 @@ import axios from "axios";
 import { useRouter } from "next/router";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const handleLogin = async (e: any) => {
     e.preventDefault();
     await axios.post("/api/auth/login", {
-      email: email,
+      username: username,
       password: password,
     }).then(function(){
       router.push(String(router.query.to || "/"));
@@ -26,7 +26,7 @@ export default function Login() {
           <form onSubmit={handleLogin}>
             <div className="flex flex-col">
               <label>Username</label>
-              <input type="text" className="rounded-xl px-4 py-2 mt-2 border-2 bg-white" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input type="text" className="rounded-xl px-4 py-2 mt-2 border-2 bg-white" value={username} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="mt-5 flex flex-col">
               <label>Password</label>

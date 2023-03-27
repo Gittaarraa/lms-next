@@ -8,11 +8,11 @@ import dayjs from "dayjs";
 export default async function handler(req:NextApiRequest, res:NextApiResponse) {
     switch(req.method){
         case'POST':
-            const { email, password } = req.body
-            if(!email||!password)return res.status(400).json({ message: "email & password required!" })
+            const { username, password } = req.body
+            if(!username||!password)return res.status(400).json({ message: "username & password required!" })
 
             const user = await prisma.user.findFirst({
-                where: { email: email }
+                where: { username: username }
             })
             if(!user)return res.status(400).json({ message: "user doesnt exist" })
             if(!await argon2.verify(user.password, password))return res.status(401).json({ message: "wrong password" })

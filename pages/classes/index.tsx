@@ -3,7 +3,7 @@ import { Navbar } from "../components/navbar";
 
 export default function Classes() {
   return (
-    <div className="w-full h-full bg-gray-200">
+    <div className="w-full h-full bg-gray-100">
       <Navbar />
       <div className="mx-14 mt-5 pb-10">
         <div className="flex space-between font-bold">

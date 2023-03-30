@@ -11,13 +11,13 @@ datasource db {
 }
 
 model User {
-  id         Int         @id @default(autoincrement())
+  id         String         @id @default(cuid())
   username   String      @unique
   password   String
   name       String
   level      UserLevel
   sessions   Session[]
-  ownedClass Class[]
+  ownedClass Kelas[]
   classMates ClassMate[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -26,7 +26,7 @@ model User {
 model Session {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
+  userId    String
   token     String
   expire    DateTime
   createdAt DateTime @default(now())
@@ -35,22 +35,40 @@ model Session {
 
 model ClassMate {
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  class   Class  @relation(fields: [classId], references: [id], onDelete: Cascade)
-  userId  Int
+  class   Kelas  @relation(fields: [classId], references: [id], onDelete: Cascade)
+  userId  String
   classId String
 
   @@id([userId, classId])
 }
 
-model Class {
+model Kelas {
   id        String      @id @default(cuid())
   className String
   section   String
+  password  String?
+  posts     Post[]
   users     ClassMate[]
   owner     User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId   Int
+  ownerId   String
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+}
+
+model Post {
+  id         String       @id @default(cuid())
+  sentence   String
+  attachment Attachment[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Class      Kelas?       @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId    String?
+}
+
+model Attachment {
+  Post   Post?  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String @id
+  file   String
 }
 
 enum UserLevel {

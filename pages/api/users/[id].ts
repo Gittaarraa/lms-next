@@ -14,18 +14,16 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
         }
     })
     const { username, password, name, level } = req.body
-    const hash = await argon2.hash(password);
 
     switch(req.method){
         case 'PATCH':
             if(session?.user.level!=='ADMIN') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
             return res.json(await prisma.user.update({
                 where: {
-                    id: Number(req.query.id)
+                    id: String(req.query.id)
                 },
                 data: {
                     username: username||undefined,
-                    password: hash||undefined,
                     level: level||undefined,
                     name: name||undefined
                 }
@@ -35,7 +33,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
 
             const user = await prisma.user.findFirst({
                 where: {
-                    id: Number(req.query.id)
+                    id: String(req.query.id)
                 }
             })
 

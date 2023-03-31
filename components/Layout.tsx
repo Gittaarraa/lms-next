@@ -12,7 +12,7 @@ import {
   Text,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { UserLevel } from "@prisma/client";
+import { Kelas, UserLevel } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -25,7 +25,7 @@ import {
 } from "react";
 import DataContext from "../utils/DataContext";
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default function Layout({ children,kelas }: { children: ReactNode,kelas: Kelas[] }) {
   const [mobileDrawerState, setMobileDrawerState] = useState(false);
 
   return (
@@ -33,6 +33,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       header={<AppHeader setMobileDrawerState={setMobileDrawerState} />}
       navbar={
         <AppNavbar
+          kelas={kelas}
           setMobileDrawerState={setMobileDrawerState}
           mobileDrawerState={mobileDrawerState}
         />
@@ -45,9 +46,11 @@ export default function Layout({ children }: { children: ReactNode }) {
 
 const AppNavbar = ({
   mobileDrawerState,
+  kelas,
   setMobileDrawerState,
 }: {
   mobileDrawerState: boolean;
+  kelas: Kelas[];
   setMobileDrawerState: Dispatch<SetStateAction<boolean>>;
 }) => {
   const router = useRouter();
@@ -76,24 +79,6 @@ const AppNavbar = ({
         zIndex={2000}
       >
         <Stack p={5} spacing={3}>
-          <NavLink
-            component="a"
-            href="/"
-            onClick={(e) => navigate(e, "/")}
-            style={{ borderRadius: "0.25rem" }}
-            icon={
-              <svg
-                width={20}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-              </svg>
-            }
-            active={router.pathname === "/"}
-            label="Home"
-          />
           {session && session.user.level === "ADMIN" && (
             <NavLink
               href="/users"
@@ -163,24 +148,6 @@ const AppNavbar = ({
       height={"calc(100vh - 60px)"}
     >
       <Stack p={5} spacing={3}>
-        <Link href="/" passHref legacyBehavior>
-          <NavLink
-            component="a"
-            style={{ borderRadius: "0.25rem" }}
-            icon={
-              <svg
-                width={20}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-              </svg>
-            }
-            active={router.pathname === "/"}
-            label="Home"
-          />
-        </Link>
         {session?.user.level === "ADMIN" && (
           <Link href="/users" passHref legacyBehavior>
             <NavLink
@@ -233,6 +200,15 @@ const AppNavbar = ({
             label="Classes"
           />
         </Link>
+        {kelas.map((kls)=><Link href={`/classes/${kls.id}`} passHref legacyBehavior>
+                <NavLink
+                    component="a"
+                    style={{ borderRadius: "0.25rem" }}
+                    active={router.pathname.startsWith(`/classes/${kls.id}`)}
+                    label={kls.className}
+                  />
+                </Link>
+          )}
       </Stack>
     </Navbar>
   );

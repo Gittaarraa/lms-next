@@ -15,6 +15,6 @@ export async function middleware(request: NextRequest) {
     const verifyResponse = await verify.json()
     if (verify.status!==200) return NextResponse.redirect(new URL('/api/auth/logout', request.url))
     if (session&&request.nextUrl.pathname.startsWith('/api/auth/session')) return NextResponse.next()
-    if (session&&(request.nextUrl.pathname.startsWith('/api/auth')||request.nextUrl.pathname.startsWith('/login'))) return NextResponse.redirect(new URL('/', request.url))
+    if (session&&(request.nextUrl.pathname.startsWith('/api/auth')||request.nextUrl.pathname.startsWith('/login'))) return NextResponse.redirect(new URL('/classes', request.url))
     if (session&&!request.nextUrl.pathname.startsWith('/api/auth')&&!request.nextUrl.pathname.startsWith('/login')) return NextResponse.next()
 }

@@ -7,12 +7,13 @@ import Layout from '../components/Layout';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { Session, User } from '@prisma/client';
+import { Kelas, Session, User } from '@prisma/client';
 import DataContext from '../utils/DataContext';
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
   const [session, setSession] = useState<(Session & { user: User })>()
+  const [kelas, setKelas] = useState<Kelas[]>([])
   const colorScheme = useColorScheme()
   const router = useRouter()
 
@@ -41,7 +42,7 @@ export default function App(props: AppProps) {
       >
           {/* <Notifications autoClose={3000} zIndex={10000} position={'top-right'}> */}
           {(router.pathname=='/login'||router.pathname == "/_error")?<Component {...pageProps} />:(
-            <Layout>
+            <Layout kelas={kelas}>
               <Container size={'xl'}>
                 <Component {...pageProps} />
               </Container>

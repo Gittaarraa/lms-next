@@ -25,7 +25,7 @@ export default function Login() {
                 color: 'green',
                 message: res.data?.message
             })
-            router.push(String(router.query.to||"/"))
+            router.push(String(router.query.to||"/classes"))
         }).catch((err) => showNotification({
             id: 'login-msg',
             title: "Login Failed!",

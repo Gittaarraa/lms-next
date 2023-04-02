@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import config from './utils/config'
 
 export async function middleware(request: NextRequest) {
-    if (request.nextUrl.pathname.startsWith('/favicon.ico')||request.nextUrl.pathname.startsWith('/_next')||request.nextUrl.pathname.startsWith('/api/auth/logout')||request.nextUrl.pathname.startsWith('/api/auth/verify')) return NextResponse.next()
+    if (request.nextUrl.pathname.startsWith('/favicon.ico')||request.nextUrl.pathname.startsWith('/_next')||request.nextUrl.pathname.startsWith('/api/auth/logout')||request.nextUrl.pathname.startsWith('/api/auth/verify')||request.nextUrl.pathname.startsWith('/image')) return NextResponse.next()
 
     const session = request.cookies.get(config.cookie_name)?.value
     if (!session&&(request.nextUrl.pathname.startsWith('/api/auth')||request.nextUrl.pathname.startsWith('/login'))) return NextResponse.next()

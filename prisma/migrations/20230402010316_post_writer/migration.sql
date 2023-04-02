@@ -1,0 +1,11 @@
+-- AlterTable
+ALTER TABLE `post` ADD COLUMN `writerId` VARCHAR(191) NULL;
+
+-- AlterTable
+ALTER TABLE `task` ADD COLUMN `kelasId` VARCHAR(191) NULL;
+
+-- AddForeignKey
+ALTER TABLE `Post` ADD CONSTRAINT `Post_writerId_fkey` FOREIGN KEY (`writerId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Task` ADD CONSTRAINT `Task_kelasId_fkey` FOREIGN KEY (`kelasId`) REFERENCES `Kelas`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

@@ -20,6 +20,7 @@ model User {
   ownedClass Kelas[]
   classMates ClassMate[]
   tasks      Task[]
+  posts      Post[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 }
@@ -49,6 +50,7 @@ model Kelas {
   section   String
   password  String?
   posts     Post[]
+  tasks     Task[]
   users     ClassMate[]
   owner     User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId   String
@@ -64,6 +66,8 @@ model Post {
   updatedAt  DateTime         @updatedAt
   Class      Kelas?           @relation(fields: [classId], references: [id], onDelete: Cascade)
   classId    String?
+  Writer     User?            @relation(fields: [writerId], references: [id])
+  writerId   String?
 }
 
 model Task {
@@ -76,6 +80,8 @@ model Task {
   updatedAt   DateTime         @updatedAt
   User        User?            @relation(fields: [userId], references: [id])
   userId      String?
+  Kelas       Kelas?           @relation(fields: [kelasId], references: [id])
+  kelasId     String?
 }
 
 model PostAttachment {

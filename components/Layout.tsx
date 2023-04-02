@@ -233,10 +233,10 @@ const AppHeader = ({ setMobileDrawerState }: any) => {
         <ActionIcon
           onClick={() => setMobileDrawerState((prev: boolean) => !prev)}
           size={"lg"}
-          color="blue"
-          variant="light"
+          variant="subtle"
         >
           <svg
+            color="white"
             xmlns="http://www.w3.org/2000/svg"
             width={20}
             viewBox="0 0 20 20"

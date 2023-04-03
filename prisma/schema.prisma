@@ -11,8 +11,8 @@ datasource db {
 }
 
 model User {
-  id         String      @id @default(cuid())
-  username   String      @unique
+  id         String        @id @default(cuid())
+  username   String        @unique
   password   String
   name       String
   level      UserLevel
@@ -21,8 +21,9 @@ model User {
   classMates ClassMate[]
   tasks      Task[]
   posts      Post[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  comments   PostComment[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 }
 
 model Session {
@@ -45,17 +46,18 @@ model ClassMate {
 }
 
 model Kelas {
-  id        String      @id @default(cuid())
-  className String
-  section   String
-  password  String?
-  posts     Post[]
-  tasks     Task[]
-  users     ClassMate[]
-  owner     User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId   String
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id         String       @id @default(cuid())
+  className  String
+  section    String
+  password   String?
+  posts      Post[]
+  tasks      Task[]
+  users      ClassMate[]
+  owner      User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId    String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  InviteCode InviteCode[]
 }
 
 model Post {
@@ -68,6 +70,7 @@ model Post {
   classId    String?
   Writer     User?            @relation(fields: [writerId], references: [id])
   writerId   String?
+  comment    PostComment[]
 }
 
 model Task {
@@ -90,10 +93,26 @@ model PostAttachment {
   file   String
 }
 
+model PostComment {
+  Post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String  
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String
+  text   String
+
+  @@id([postId, userId])
+}
+
 model TaskAttachment {
   Task   Task?  @relation(fields: [taskId], references: [id])
   taskId String @id
   file   String
+}
+
+model InviteCode {
+  code    String @id
+  kelas   Kelas  @relation(fields: [kelasId], references: [id])
+  kelasId String
 }
 
 enum UserLevel {

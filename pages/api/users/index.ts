@@ -17,7 +17,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
 
     switch(req.method){
         case'POST':
-            if(session?.user.level!=='ADMIN') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
+            if(session?.user.level!=='SUPER_TEACHER') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
             if(!username||!password||!name||!level)return res.status(400).json({ message: "username, password, name, and level required!" })
             //excel
             const checkUser = await prisma.user.findFirst({

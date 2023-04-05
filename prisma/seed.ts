@@ -10,7 +10,7 @@ async function main() {
     create: {
         username: process.env.MASTER_USERNAME||'admin',
         password: await argon2.hash(process.env.MASTER_PASSWORD||'admin', {timeCost: 32, parallelism: 2}),
-        level: 'ADMIN',
+        level: 'SUPER_TEACHER',
         name: 'Administrator'
     },
   })

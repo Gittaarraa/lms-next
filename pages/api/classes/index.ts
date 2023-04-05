@@ -18,10 +18,10 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
 
     switch(req.method){
         case 'POST':
-            if(session?.user.level!=='ADMIN'&&session?.user.level!=='TEACHER') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
+            if(session?.user.level!=='SUPER_TEACHER'&&session?.user.level!=='TEACHER') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
             const { className, section } = req.body
             if(!className||!section)return res.status(400).json({ message: "Class Name and Section is required!" })
-            await prisma.kelas.create({
+            const kelas = await prisma.kelas.create({
                 data: {
                     className,
                     section,
@@ -35,7 +35,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
             })
             return res.json(await prisma.classMate.create({
                 data: {
-                    classId: String(req.query.id),
+                    classId: kelas.id,
                     userId: session.user.id
                 }
             }))

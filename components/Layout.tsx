@@ -79,7 +79,7 @@ const AppNavbar = ({
         zIndex={2000}
       >
         <Stack p={5} spacing={3}>
-          {session && session.user.level === "ADMIN" && (
+          {session && session.user.level === "SUPER_TEACHER" && (
             <NavLink
               href="/users"
               onClick={(e) => navigate(e, "/users")}
@@ -148,7 +148,7 @@ const AppNavbar = ({
       height={"calc(100vh - 60px)"}
     >
       <Stack p={5} spacing={3}>
-        {session?.user.level === "ADMIN" && (
+        {session?.user.level === "SUPER_TEACHER" && (
           <Link href="/users" passHref legacyBehavior>
             <NavLink
               component="a"

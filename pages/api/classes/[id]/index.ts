@@ -19,7 +19,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
 
     switch(req.method){
         case 'PATCH':
-            if(session?.user.level!=='ADMIN'&&session?.user.level!=='TEACHER') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
+            if(session?.user.level!=='SUPER_TEACHER'&&session?.user.level!=='TEACHER') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
             return res.json(await prisma.kelas.update({
                 where: {
                     id: String(req.query.id)
@@ -30,7 +30,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
                 }
             }))
         case 'POST':
-            if(session?.user.level!=='ADMIN'&&session?.user.level!=='TEACHER') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
+            if(session?.user.level!=='SUPER_TEACHER'&&session?.user.level!=='TEACHER') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
             return res.json(await prisma.inviteCode.create({
                 data: {
                     code: `${slugify(className, { lower: true })}-${cuid.slug()}`,

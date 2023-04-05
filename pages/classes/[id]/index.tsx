@@ -163,7 +163,7 @@ export default function Classroom({
   const editComment = async (postId: string, commentId: String) => {
     await axios
       .patch(`/api/classes/${kelas?.id}/posts/${postId}/comment/${commentId}`, {
-        sentence: postNameEdit,
+        text: commentNameEdit,
       })
       .then((res) => {
         showNotification({
@@ -172,7 +172,7 @@ export default function Classroom({
           color: "green",
           message: res.data?.message,
         });
-        setEditPostModal(false)
+        setEditCommentModal(false)
         router.push(String(router.asPath));
       })
       .catch((err) =>
@@ -260,7 +260,7 @@ export default function Classroom({
                 </Text>
               </Flex>
               <Flex direction={"column"} gap={"xs"} align={"end"}>
-                <Menu position="top-end" shadow="md" width={200}>
+              {(session?.user.level==='SUPER_TEACHER'||session?.user.level==='TEACHER')&&<Menu position="top-end" shadow="md" width={200}>
                   <Menu.Target>
                     <ActionIcon size={"lg"} variant="subtle">
                       <svg
@@ -290,7 +290,7 @@ export default function Classroom({
                       Invitational Code
                     </Menu.Item>
                   </Menu.Dropdown>
-                </Menu>
+                </Menu>}
                 <Button
                   component="a"
                   variant={"filled"}
@@ -305,7 +305,7 @@ export default function Classroom({
               </Flex>
             </Flex>
           </Card>
-          <UnstyledButton
+          {(session?.user.level==='SUPER_TEACHER'||session?.user.level==='TEACHER')&&<UnstyledButton
             onClick={() => setCreatePostModal(true)}
             ref={ref}
             w={"85%"}
@@ -315,7 +315,7 @@ export default function Classroom({
                 Post something to your class
               </Text>
             </Card>
-          </UnstyledButton>
+          </UnstyledButton>}
           {kelas?.posts.map((post) => (
             <Card shadow="sm" radius={"md"} withBorder w={"85%"}>
               <Card.Section p={"md"}>
@@ -343,7 +343,7 @@ export default function Classroom({
                       ))}
                     </Group>
                   </Flex>
-                  <Menu position="top-end" shadow="md" width={200}>
+                  {(session?.user.level==='SUPER_TEACHER'||kelas.owner.id===session?.user.id||post.Writer?.id===session?.user.id)&&<Menu position="top-end" shadow="md" width={200}>
                     <Menu.Target>
                       <ActionIcon size={"lg"} variant="subtle">
                         <svg
@@ -376,7 +376,7 @@ export default function Classroom({
                       </Menu.Item>
                       <Menu.Item component="a">Delete</Menu.Item>
                     </Menu.Dropdown>
-                  </Menu>
+                  </Menu>}
                 </Flex>
               </Card.Section>
               <Card.Section withBorder>
@@ -404,7 +404,7 @@ export default function Classroom({
                         {comment.text}
                       </Text>
                     </Flex>
-                    <Menu position="right" shadow="md" width={200}>
+                    {(session?.user.level==='SUPER_TEACHER'||kelas.owner.id===session?.user.id||comment.User.id===session?.user.id)&&<Menu position="right" shadow="md" width={200}>
                       <Menu.Target>
                         <ActionIcon size={"lg"} variant="subtle">
                           <svg
@@ -438,7 +438,7 @@ export default function Classroom({
                       </Menu.Item>
                         <Menu.Item component="a">Delete</Menu.Item>
                       </Menu.Dropdown>
-                    </Menu>
+                    </Menu>}
                   </Flex>
                 ))}
               </Card.Section>

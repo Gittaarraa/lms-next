@@ -24,7 +24,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
 
     switch(req.method){
         case 'PATCH':
-            if(session?.user.level!=='SUPER_TEACHER'&&comment?.userId===session?.user.id) return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
+            if(session?.user.level!=='SUPER_TEACHER'&&comment?.userId!==session?.user.id) return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
             return res.json(await prisma.postComment.update({
                 where: {
                     id: String(req.query.commentid)

@@ -68,8 +68,14 @@ export default function Classroom({
   const { hovered, ref }: any = useHover();
   const [editClassModal, setEditClassModal] = useState(false);
   const [createPostModal, setCreatePostModal] = useState(false);
+  const [editPostModal, setEditPostModal] = useState(false)
+  const [editCommentModal, setEditCommentModal] = useState(false)
   const [classNameEdit, setClassNameEdit] = useInputState(kelas?.className);
   const [sectionEdit, setSectionEdit] = useInputState(kelas?.section);
+  const [postNameEdit, setPostNameEdit] = useInputState("");
+  const [postIdEdit, setPostIdEdit] = useInputState("");
+  const [commentNameEdit, setCommentNameEdit] = useInputState("");
+  const [commentIdEdit, setCommentIdEdit] = useInputState("");
   const [postText, setPostText] = useInputState("");
   const [comment, setComment] = useInputState("");
   const [fileValue, setFileValue] = useState<File[]>([]);
@@ -117,6 +123,56 @@ export default function Classroom({
           message: res.data?.message,
         });
         setCreatePostModal(false);
+        router.push(String(router.asPath));
+      })
+      .catch((err) =>
+        showNotification({
+          id: "create-post-msg",
+          title: "Create Post Failed!",
+          color: "red",
+          message: err.response?.data?.message || err.message,
+        })
+      );
+  };
+
+  const editPost = async (postId: string) => {
+    await axios
+      .patch(`/api/classes/${kelas?.id}/posts/${postId}/`, {
+        sentence: postNameEdit,
+      })
+      .then((res) => {
+        showNotification({
+          id: "create-post-msg",
+          title: "Post Created Successfully!",
+          color: "green",
+          message: res.data?.message,
+        });
+        setEditPostModal(false)
+        router.push(String(router.asPath));
+      })
+      .catch((err) =>
+        showNotification({
+          id: "create-post-msg",
+          title: "Create Post Failed!",
+          color: "red",
+          message: err.response?.data?.message || err.message,
+        })
+      );
+  };
+
+  const editComment = async (postId: string, commentId: String) => {
+    await axios
+      .patch(`/api/classes/${kelas?.id}/posts/${postId}/comment/${commentId}`, {
+        sentence: postNameEdit,
+      })
+      .then((res) => {
+        showNotification({
+          id: "create-post-msg",
+          title: "Post Created Successfully!",
+          color: "green",
+          message: res.data?.message,
+        });
+        setEditPostModal(false)
         router.push(String(router.asPath));
       })
       .catch((err) =>
@@ -226,7 +282,7 @@ export default function Classroom({
                     </ActionIcon>
                   </Menu.Target>
                   <Menu.Dropdown>
-                    <Menu.Item component="a">Edit Class</Menu.Item>
+                    <Menu.Item component="a" onClick={() => setEditClassModal(true)}>Edit Class</Menu.Item>
                     <Menu.Item
                       component="a"
                       href={`/classes/${kelas?.id}/codes`}
@@ -238,7 +294,7 @@ export default function Classroom({
                 <Button
                   component="a"
                   variant={"filled"}
-                  href={`/classes/${kelas?.id}/task`}
+                  href={`/classes/${kelas?.id}/tasks`}
                   leftIcon={<svg width={20} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                 </svg>
@@ -308,7 +364,16 @@ export default function Classroom({
                       </ActionIcon>
                     </Menu.Target>
                     <Menu.Dropdown>
-                      <Menu.Item component="a">Edit</Menu.Item>
+                      <Menu.Item 
+                      component="a" 
+                      onClick={() => {
+                        setEditPostModal(true)
+                        setPostIdEdit(post.id)
+                        setPostNameEdit(post.sentence)
+                      }}
+                      >
+                        Edit
+                      </Menu.Item>
                       <Menu.Item component="a">Delete</Menu.Item>
                     </Menu.Dropdown>
                   </Menu>
@@ -360,7 +425,17 @@ export default function Classroom({
                         </ActionIcon>
                       </Menu.Target>
                       <Menu.Dropdown>
-                        <Menu.Item component="a">Edit</Menu.Item>
+                      <Menu.Item 
+                      component="a" 
+                      onClick={() => {
+                        setEditCommentModal(true)
+                        setPostIdEdit(post.id)
+                        setCommentIdEdit(comment.id)
+                        setCommentNameEdit(comment.text)
+                      }}
+                      >
+                        Edit
+                      </Menu.Item>
                         <Menu.Item component="a">Delete</Menu.Item>
                       </Menu.Dropdown>
                     </Menu>
@@ -490,6 +565,62 @@ export default function Classroom({
           </Button>
           <Button type="submit" onClick={createPost} component="a">
             Post
+          </Button>
+        </Flex>
+      </Modal>
+      <Modal
+            size={'xl'}
+            centered
+            opened={editPostModal}
+            onClose={() => setEditPostModal(false)}
+        >
+          <Flex direction={"column"} gap={"md"}>
+          <Text size={"lg"}>Edit Post</Text>
+          <TextInput
+            required
+            value={postNameEdit}
+            onChange={setPostNameEdit}
+            label="Sentence"
+          />
+        </Flex>
+        <Flex align={"flex-end"} justify={"flex-end"} mt={"md"} gap={"sm"}>
+          <Button
+            onClick={() => setEditPostModal(false)}
+            component="a"
+            variant={"subtle"}
+          >
+            Close
+          </Button>
+          <Button type="submit" onClick={() => editPost(postIdEdit)} component="a">
+            Edit
+          </Button>
+        </Flex>
+      </Modal>
+      <Modal
+            size={'xl'}
+            centered
+            opened={editCommentModal}
+            onClose={() => setEditCommentModal(false)}
+        >
+          <Flex direction={"column"} gap={"md"}>
+          <Text size={"lg"}>Edit Post</Text>
+          <TextInput
+            required
+            value={commentNameEdit}
+            onChange={setCommentNameEdit}
+            label="Sentence"
+          />
+        </Flex>
+        <Flex align={"flex-end"} justify={"flex-end"} mt={"md"} gap={"sm"}>
+          <Button
+            onClick={() => setEditCommentModal(false)}
+            component="a"
+            variant={"subtle"}
+          >
+            Close
+          </Button>
+          <Button type="submit" onClick={() => editComment(postIdEdit, commentIdEdit)} component="a">
+            Edit
           </Button>
         </Flex>
       </Modal>

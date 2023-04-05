@@ -20,7 +20,7 @@ import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 
 export default function Users({ users }: { users: User[] }) {
   const [editUserModal, setEditUserModal] = useState(false); 

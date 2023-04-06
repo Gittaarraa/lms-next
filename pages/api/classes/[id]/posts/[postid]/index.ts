@@ -33,6 +33,16 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
                     sentence
                 }
             }))
+        case'DELETE':
+            if(session?.user.level!=='SUPER_TEACHER'&&post?.writerId!==session?.user.id) return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
+            if(!post)return res.status(400).json({ message: "invalid post!" })
+
+            await prisma.post.delete({
+                where: {
+                    id: post.id
+                }
+            })
+            return res.status(200).json({ message: "post successfully deleted!" })
         default:
             return res.status(405).json({ message: req.method+' method is not allowed!' })
     }

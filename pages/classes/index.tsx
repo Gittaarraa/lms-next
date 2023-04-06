@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { useInputState } from "@mantine/hooks";
 import axios from "axios";
 import { showNotification } from "@mantine/notifications";
+import config from "@/utils/config";
 
 export default function Classes({ kelas, inviteCode }:{ kelas: (Kelas & { owner: User })[], inviteCode: InviteCode }) {
   const { session } = useContext(DataContext)
@@ -94,15 +95,40 @@ export default function Classes({ kelas, inviteCode }:{ kelas: (Kelas & { owner:
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  const kelas = await prisma.kelas.findMany({
-    include:{
-      owner: true
+  const token = ctx.req.cookies[config.cookie_name]
+    const session = await prisma.session.findFirst({
+        where: {
+            token,
+            expire: {
+                gte: new Date()
+            }
+        },
+        include: {
+            user: true
+        }
+    })
+    const kelas = await prisma.kelas.findMany({
+        where: {
+            OR: [
+                {
+                    ownerId: session?.userId
+                },
+                {
+                    users: {
+                        some: {
+                            userId: session?.userId
+                        }
+                    }
+                }
+            ]
+        },
+        include: {
+          owner: true
+        }
+    })
+    return{
+        props: {
+            kelas: JSON.parse(JSON.stringify(kelas))
+        }
     }
-  });
-
-  return {
-    props: {
-      kelas: JSON.parse(JSON.stringify(kelas))
-    }, // will be passed to the page component as props
-  };
 }

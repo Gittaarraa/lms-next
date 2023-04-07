@@ -27,6 +27,7 @@ import {
   Post,
   PostAttachment,
   PostComment,
+  Task,
   User,
 } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
@@ -52,6 +53,7 @@ export default function Classroom({
 }: {
   kelas:
     | (Kelas & {
+        tasks: Task[];
         owner: User;
         InviteCode: InviteCode[];
         users: (ClassMate & { user: User })[];
@@ -165,8 +167,8 @@ export default function Classroom({
       })
       .then((res) => {
         showNotification({
-          id: "create-post-msg",
-          title: "Post Created Successfully!",
+          id: "edit-post-msg",
+          title: "Post Edited Successfully!",
           color: "green",
           message: res.data?.message,
         });
@@ -175,8 +177,8 @@ export default function Classroom({
       })
       .catch((err) =>
         showNotification({
-          id: "create-post-msg",
-          title: "Create Post Failed!",
+          id: "edit-post-msg",
+          title: "Edit Post Failed!",
           color: "red",
           message: err.response?.data?.message || err.message,
         })
@@ -190,8 +192,8 @@ export default function Classroom({
       })
       .then((res) => {
         showNotification({
-          id: "create-post-msg",
-          title: "Post Created Successfully!",
+          id: "edit-comment-msg",
+          title: "Comment Edited Successfully!",
           color: "green",
           message: res.data?.message,
         });
@@ -200,8 +202,8 @@ export default function Classroom({
       })
       .catch((err) =>
         showNotification({
-          id: "create-post-msg",
-          title: "Create Post Failed!",
+          id: "edit-comment-msg",
+          title: "Edit Comment Failed!",
           color: "red",
           message: err.response?.data?.message || err.message,
         })
@@ -231,6 +233,45 @@ export default function Classroom({
         })
       );
   };
+
+  const deletePost = (postId: string) => {
+    if(!confirm(`Are you sure want to remove this post?`))return
+    axios.delete(`/api/classes/${kelas?.id}/posts/${postId}`).then(()=> {
+        showNotification({
+            id: 'delete-post-msg',
+            title: "Delete Post Success!",
+            color: 'green',
+            message: "Post Successfully Deleted"
+        })
+        router.replace(router.asPath)
+      }).catch((err)=> {
+        showNotification({
+            id: 'delete-post-msg',
+            title: "Delete Post Failed!",
+            color: 'red',
+            message: err.response?.data?.message||'unknown server side error!'
+        })
+    })
+  }
+
+  const deleteComment = (postId: string, commentId: string) => {
+    axios.delete(`/api/classes/${kelas?.id}/posts/${postId}/comment/${commentId}`).then(()=> {
+        showNotification({
+            id: 'delete-comment-msg',
+            title: "Delete Comment Success!",
+            color: 'green',
+            message: "Comment Successfully Deleted"
+        })
+        router.replace(router.asPath)
+      }).catch((err)=> {
+        showNotification({
+            id: 'delete-comment-msg',
+            title: "Delete Comment Failed!",
+            color: 'red',
+            message: err.response?.data?.message||'unknown server side error!'
+        })
+    })
+  }
 
   useEffect(() => {
     readFile();
@@ -323,7 +364,7 @@ export default function Classroom({
                 </svg>
                 }
                 >
-                  3
+                  {kelas?.tasks.length}
                 </Button>
               </Flex>
             </Flex>
@@ -333,7 +374,7 @@ export default function Classroom({
             ref={ref}
             w={"85%"}
           >
-            <Card shadow="sm" radius={"md"} withBorder component="a">
+            <Card ref={ref} shadow="sm" radius={"md"} withBorder component="a">
               <Text color={hovered ? "blue" : "dark"}>
                 Post something to your class
               </Text>
@@ -460,7 +501,7 @@ export default function Classroom({
                       >
                         Edit
                       </Menu.Item>
-                        <Menu.Item component="a">Delete</Menu.Item>
+                        <Menu.Item component="a" onClick={()=>deleteComment(post.id,comment.id)}>Delete</Menu.Item>
                       </Menu.Dropdown>
                     </Menu>}
                   </Flex>
@@ -665,6 +706,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       },
       owner: true,
       InviteCode: true,
+      tasks: true,
       posts: {
         include: {
           attachment: true,

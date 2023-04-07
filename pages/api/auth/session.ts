@@ -20,6 +20,11 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
                             name: true,
                             updatedAt: true,
                             createdAt: true,
+                            classMates: {
+                                include: {
+                                    class: true
+                                }
+                            }
                         }
                     }
                 }

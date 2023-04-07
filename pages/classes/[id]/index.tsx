@@ -234,26 +234,6 @@ export default function Classroom({
       );
   };
 
-  const deletePost = (postId: string) => {
-    if(!confirm(`Are you sure want to remove this post?`))return
-    axios.delete(`/api/classes/${kelas?.id}/posts/${postId}`).then(()=> {
-        showNotification({
-            id: 'delete-post-msg',
-            title: "Delete Post Success!",
-            color: 'green',
-            message: "Post Successfully Deleted"
-        })
-        router.replace(router.asPath)
-      }).catch((err)=> {
-        showNotification({
-            id: 'delete-post-msg',
-            title: "Delete Post Failed!",
-            color: 'red',
-            message: err.response?.data?.message||'unknown server side error!'
-        })
-    })
-  }
-
   const deleteComment = (postId: string, commentId: string) => {
     axios.delete(`/api/classes/${kelas?.id}/posts/${postId}/comment/${commentId}`).then(()=> {
         showNotification({

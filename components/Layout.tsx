@@ -10,6 +10,7 @@ import {
   Title,
   Flex,
   Text,
+  Divider,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { Kelas, UserLevel } from "@prisma/client";
@@ -138,10 +139,7 @@ const AppNavbar = ({
     <Navbar
       styles={(theme) => ({
         root: {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[9]
-              : theme.colors.gray[0],
+          backgroundColor: 'white'
         },
       })}
       width={{ base: 250 }}
@@ -200,6 +198,7 @@ const AppNavbar = ({
             label="Classes"
           />
         </Link>
+        <Divider my={'sm'} />
         {kelas.map((kls)=><Link href={`/classes/${kls.id}`} passHref legacyBehavior>
                 <NavLink
                     component="a"
@@ -207,7 +206,7 @@ const AppNavbar = ({
                     active={router.pathname.startsWith(`/classes/${kls.id}`)}
                     label={kls.className}
                   />
-                </Link>
+            </Link>
           )}
       </Stack>
     </Navbar>

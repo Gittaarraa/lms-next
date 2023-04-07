@@ -85,6 +85,7 @@ export default function Classroom({
   const smallScreen = useMediaQuery("(max-width: 630px)");
   const router = useRouter();
 
+  {/* APIs Here */}
   const editClass = async () => {
     await axios
       .patch(`/api/classes/${kelas?.id}`, {
@@ -360,6 +361,7 @@ export default function Classroom({
               </Text>
             </Card>
           </UnstyledButton>}
+          {/* Posts & Comments */}
           {kelas?.posts.map((post) => (
             <Card key={post.id} shadow="sm" radius={"md"} withBorder w={"85%"}>
               <Card.Section p={"md"}>
@@ -544,6 +546,7 @@ export default function Classroom({
           </Card.Section>
         </Card>
       </Flex>
+      {/* Modals Here */}
       <Modal
         size={"xl"}
         centered

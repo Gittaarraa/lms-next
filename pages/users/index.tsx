@@ -22,9 +22,11 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { FormEvent, useEffect, useState } from "react";
 
-export default function Users({ users }: { users: User[] }) {
+export default function Users({ usersProps }: { usersProps: User[] }) {
   const [editUserModal, setEditUserModal] = useState(false); 
+  const [searchName, setSearchName] = useState("")
   const [user, setUser] = useState<User>();
+  const [users, setUsers] = useState<User[]>(usersProps);
   const router = useRouter()
 
   const removeUser = (user: User) => {
@@ -59,7 +61,7 @@ export default function Users({ users }: { users: User[] }) {
         direction={"column"}
         gap={"lg"}
       >
-        <TextInput label="Search User Name" w={"100%"} />
+        <TextInput label="Search User Name" w={"100%"} onChange={(e) => setSearchName(e.target.value)}/>
         <Button
           ml={"auto"}
           type="button"
@@ -85,6 +87,7 @@ export default function Users({ users }: { users: User[] }) {
         >
           Create User
         </Button>
+        {/* Table Users */}
         <Table withBorder verticalSpacing={"md"}>
           <thead>
             <tr>
@@ -95,7 +98,13 @@ export default function Users({ users }: { users: User[] }) {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => {
+            {users.filter((items) => {
+              if(searchName == null){
+                return items
+              } else if(items.name.toLowerCase().includes(searchName.toLowerCase())){
+                return items
+              }
+            }).map((user) => {
               return (
                 <tr key={user.id}>
                   <td>{user.username}</td>
@@ -161,6 +170,7 @@ export default function Users({ users }: { users: User[] }) {
           </tbody>
         </Table>
       </Flex>
+      {/* Modals here */}
       <Modal
             size={'xl'}
             centered
@@ -178,7 +188,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   return {
     props: {
-      users: JSON.parse(JSON.stringify(users))
+      usersProps: JSON.parse(JSON.stringify(users))
     }, // will be passed to the page component as props
   };
 }

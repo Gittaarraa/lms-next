@@ -8,10 +8,10 @@ async function main() {
     where: { username: process.env.MASTER_USERNAME },
     update: {},
     create: {
-        username: process.env.MASTER_USERNAME||'admin',
-        password: await argon2.hash(process.env.MASTER_PASSWORD||'admin', {timeCost: 32, parallelism: 2}),
+        username: process.env.MASTER_USERNAME||'superteacher',
+        password: await argon2.hash(process.env.MASTER_PASSWORD||'superteacher', {timeCost: 32, parallelism: 2}),
         level: 'SUPER_TEACHER',
-        name: 'Administrator'
+        name: 'Super Teacher'
     },
   })
   console.log({ master })

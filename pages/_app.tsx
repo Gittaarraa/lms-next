@@ -40,7 +40,7 @@ export default function App(props: AppProps) {
           colorScheme: 'light',
         }}
       >
-          {/* <Notifications autoClose={3000} zIndex={10000} position={'top-right'}> */}
+          <Notifications autoClose={3000} zIndex={10000} position={'top-right'}/>
           {(router.pathname=='/login'||router.pathname == "/_error")?<Component {...pageProps} />:(
             <Layout kelas={kelas}>
               <Container size={'xl'}>

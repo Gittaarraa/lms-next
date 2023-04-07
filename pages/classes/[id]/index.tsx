@@ -109,6 +109,29 @@ export default function Classroom({
       );
   };
 
+  const deletePost = async (postId: string) => {
+    if(!confirm('Apakah anda yakin ingin menghapus post?')) return
+    await axios
+      .delete(`/api/classes/${kelas?.id}/posts/${postId}`)
+      .then((res) => {
+        showNotification({
+          id: "delete-post-msg",
+          title: "Post Deleted Successfully!",
+          color: "green",
+          message: res.data?.message,
+        });
+        router.push(String(router.asPath));
+      })
+      .catch((err) =>
+        showNotification({
+          id: "delete-post-msg",
+          title: "Delete Post Failed!",
+          color: "red",
+          message: err.response?.data?.message || err.message,
+        })
+      );
+  };
+
   const createPost = async () => {
     await axios
       .post(`/api/classes/${kelas?.id}/posts`, {
@@ -282,9 +305,9 @@ export default function Classroom({
                     </ActionIcon>
                   </Menu.Target>
                   <Menu.Dropdown>
-                    <Menu.Item component="a" onClick={() => setEditClassModal(true)}>Edit Class</Menu.Item>
+                    <Menu.Item component="button" onClick={() => setEditClassModal(true)}>Edit Class</Menu.Item>
                     <Menu.Item
-                      component="a"
+                      component={Link}
                       href={`/classes/${kelas?.id}/codes`}
                     >
                       Invitational Code
@@ -292,7 +315,7 @@ export default function Classroom({
                   </Menu.Dropdown>
                 </Menu>}
                 <Button
-                  component="a"
+                  component={Link}
                   variant={"filled"}
                   href={`/classes/${kelas?.id}/tasks`}
                   leftIcon={<svg width={20} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
@@ -317,7 +340,7 @@ export default function Classroom({
             </Card>
           </UnstyledButton>}
           {kelas?.posts.map((post) => (
-            <Card shadow="sm" radius={"md"} withBorder w={"85%"}>
+            <Card key={post.id} shadow="sm" radius={"md"} withBorder w={"85%"}>
               <Card.Section p={"md"}>
                 <Flex justify={"space-between"} direction={"row"} w={"100%"}>
                   <Flex direction={"column"}>
@@ -374,7 +397,7 @@ export default function Classroom({
                       >
                         Edit
                       </Menu.Item>
-                      <Menu.Item component="a">Delete</Menu.Item>
+                      <Menu.Item onClick={()=>deletePost(post.id)}>Delete</Menu.Item>
                     </Menu.Dropdown>
                   </Menu>}
                 </Flex>
@@ -390,6 +413,7 @@ export default function Classroom({
                     w={"100%"}
                     px={"xl"}
                     pb={"xl"}
+                    key={comment.id}
                   >
                     <Flex direction={"column"}>
                       <Group align="center">

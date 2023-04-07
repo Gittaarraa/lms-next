@@ -93,7 +93,6 @@ model TaskAssignment {
   id         String                 @id @default(uuid())
   Task       Task?                  @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskId     String
-  file       String
   text       String
   createdAt  DateTime               @default(now())
   updatedAt  DateTime               @updatedAt

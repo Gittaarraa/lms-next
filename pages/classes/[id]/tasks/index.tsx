@@ -203,13 +203,13 @@ export default function Tasks({ kelas }:{ kelas: Kelas & { tasks: (Task & {
                     component={Link}
                     target={"_blank"}
                     href={`/api/${attachment.file}`}>{attachment.file.split("/").pop()}</Text>
-                  <ActionIcon
+                  {(session?.user.level==='SUPER_TEACHER'||session?.user.level==='TEACHER')&&<ActionIcon
                     onClick={() => deleteAtt(task.id, attachment.id)}
                     size={"lg"}
                     variant="subtle"
                   >
                     <svg width={20} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                  </ActionIcon>
+                  </ActionIcon>}
                 </Group>
               </Card>
             ))}
@@ -217,7 +217,8 @@ export default function Tasks({ kelas }:{ kelas: Kelas & { tasks: (Task & {
         </Card.Section>
         <Card.Section p={'md'} withBorder>
           <Flex align={'flex-end'} justify={'flex-end'}>
-          {(session?.user.level==='SUPER_TEACHER'||session?.user.level==='TEACHER')?<ListAssignmentModal task={task}/>:<SendAssigmentModal task={task}/>}
+          {(session?.user.level==='STUDENT')&&dayjs(task.dueDate).format("DD/MM/YYYY")===dayjs(Date.now()).format("DD/MM/YYYY")?<Button component="button" disabled>Expired</Button>:(session?.user.level==='SUPER_TEACHER'||session?.user.level==='TEACHER')?<ListAssignmentModal task={task}/>:<SendAssigmentModal task={task}/>}
+          {session?.user.id==='SUPER_TEACHER'||session?.user.id==='TEACHER'?(session?.user.level==='SUPER_TEACHER'||session?.user.level==='TEACHER')?<ListAssignmentModal task={task}/>:<SendAssigmentModal task={task}/>:''}
           </Flex>
         </Card.Section>
       </Card>

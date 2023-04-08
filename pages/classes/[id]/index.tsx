@@ -410,13 +410,13 @@ export default function Classroom({
                               component={Link}
                               target={"_blank"}
                               href={`/api/${attachment.file}`}>{attachment.file.split("/").pop()}</Text>
-                            <ActionIcon
+                            {(session?.user.level==='SUPER_TEACHER'||kelas.owner.id===session?.user.id||post.Writer?.id===session?.user.id)&&<ActionIcon
                               onClick={() => deleteAtt(post.id, attachment.id)}
                               size={"lg"}
                               variant="subtle"
                             >
                               <svg width={20} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                            </ActionIcon>
+                            </ActionIcon>}
                           </Group>
                         </Card>
                       ))}

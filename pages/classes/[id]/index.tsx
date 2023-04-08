@@ -79,7 +79,7 @@ export default function Classroom({
   const [commentNameEdit, setCommentNameEdit] = useInputState("");
   const [commentIdEdit, setCommentIdEdit] = useInputState("");
   const [postText, setPostText] = useInputState("");
-  const [comment, setComment] = useInputState("");
+  const [commentText, setCommentText] = useInputState("");
   const [fileValue, setFileValue] = useState<File[]>([]);
   const [attachments, setAttachments] = useState<AttachmentBody[]>([]);
   const smallScreen = useMediaQuery("(max-width: 630px)");
@@ -98,6 +98,7 @@ export default function Classroom({
           color: "green",
           message: res.data?.message,
         });
+        setClassNameEdit('')
         setEditClassModal(false);
         router.push(String(router.asPath));
       })
@@ -147,6 +148,7 @@ export default function Classroom({
           color: "green",
           message: res.data?.message,
         });
+        setPostText('')
         setCreatePostModal(false);
         router.push(String(router.asPath));
       })
@@ -172,6 +174,7 @@ export default function Classroom({
           color: "green",
           message: res.data?.message,
         });
+        setPostNameEdit('')
         setEditPostModal(false)
         router.push(String(router.asPath));
       })
@@ -197,6 +200,7 @@ export default function Classroom({
           color: "green",
           message: res.data?.message,
         });
+        setCommentNameEdit('')
         setEditCommentModal(false)
         router.push(String(router.asPath));
       })
@@ -213,21 +217,22 @@ export default function Classroom({
   const createComment = async (postId: string) => {
     await axios
       .post(`/api/classes/${kelas?.id}/posts/${postId}/comment`, {
-        text: comment,
+        text: commentText,
       })
       .then((res) => {
         showNotification({
-          id: "create-post-msg",
-          title: "Post Created Successfully!",
+          id: "create-comment-msg",
+          title: "Comment Created Successfully!",
           color: "green",
           message: res.data?.message,
         });
+        setCommentText('')
         router.push(String(router.asPath));
       })
       .catch((err) =>
         showNotification({
-          id: "create-post-msg",
-          title: "Create Post Failed!",
+          id: "create-comment-msg",
+          title: "Create Comment Failed!",
           color: "red",
           message: err.response?.data?.message || err.message,
         })
@@ -247,6 +252,25 @@ export default function Classroom({
         showNotification({
             id: 'delete-comment-msg',
             title: "Delete Comment Failed!",
+            color: 'red',
+            message: err.response?.data?.message||'unknown server side error!'
+        })
+    })
+  }
+
+  const deleteAtt = (postId: string, attId: string) => {
+    axios.delete(`/api/classes/${kelas?.id}/posts/${postId}/attachment/${attId}`).then(()=> {
+        showNotification({
+            id: 'delete-att-msg',
+            title: "Delete Attachment Success!",
+            color: 'green',
+            message: "Attachment Successfully Deleted"
+        })
+        router.replace(router.asPath)
+      }).catch((err)=> {
+        showNotification({
+            id: 'delete-att-msg',
+            title: "Delete Attachment Failed!",
             color: 'red',
             message: err.response?.data?.message||'unknown server side error!'
         })
@@ -375,14 +399,23 @@ export default function Classroom({
                     <Group spacing={"sm"}>
                       {post.attachment.map((attachment) => (
                         <Card
-                          component={Link}
-                          target={"_blank"}
-                          href={`/api/${attachment.file}`}
                           mt={"sm"}
                           radius={"md"}
                           withBorder
                         >
-                          <Text>{attachment.file.split("/").pop()}</Text>
+                          <Group>
+                            <Text 
+                              component={Link}
+                              target={"_blank"}
+                              href={`/api/${attachment.file}`}>{attachment.file.split("/").pop()}</Text>
+                            <ActionIcon
+                              onClick={() => deleteAtt(post.id, attachment.id)}
+                              size={"lg"}
+                              variant="subtle"
+                            >
+                              <svg width={20} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </ActionIcon>
+                          </Group>
                         </Card>
                       ))}
                     </Group>
@@ -423,11 +456,12 @@ export default function Classroom({
                   </Menu>}
                 </Flex>
               </Card.Section>
-              <Card.Section withBorder>
-                <Text color="gray" p={"lg"}>
-                  Comments
-                </Text>
-                {post.comment.map((comment) => (
+                {post.comment.length?<Card.Section withBorder>
+                    <Text color='gray' p={"lg"}>
+                      {`Comments ${post.comment.length}`}
+                    </Text>
+                {post.comment.map((comment) => {
+                  return (
                   <Flex
                     justify={"space-between"}
                     direction={"row"}
@@ -485,16 +519,17 @@ export default function Classroom({
                       </Menu.Dropdown>
                     </Menu>}
                   </Flex>
-                ))}
-              </Card.Section>
+                )
+              })}
+              </Card.Section>:''}
               <Card.Section withBorder p={"xl"}>
                 <Flex justify={"space-between"} direction={"row"} w={"100%"}>
                   <TextInput
                     placeholder="Add comment"
                     radius="xl"
                     w={"100%"}
-                    value={comment}
-                    onChange={setComment}
+                    value={commentText}
+                    onChange={setCommentText}
                   />
                   <ActionIcon
                     onClick={() => createComment(post.id)}

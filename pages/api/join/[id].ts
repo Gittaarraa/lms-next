@@ -22,7 +22,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
                     code: String(req.query.id)
                 }
             })
-            if(!inviteCode) return res.status(404).json({ message: 'invalid class' })
+            if(!inviteCode) return res.status(404).json({ redirect: '/classes' })
             const checkUser = await prisma.classMate.findFirst({
                 where: { 
                     userId: session.user.id,

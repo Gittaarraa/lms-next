@@ -13,19 +13,20 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
             user: true 
         }
     })
-    const { title, instruction, dueDate } = req.body
+    const attachment = await prisma.taskAttachment.findFirst({
+        where: {
+            id: String(req.query.attid)
+        }
+    })
+
+    if(!attachment) return res.status(404).json({ meessage: "attachment not found!" })
 
     switch(req.method){
-        case 'PATCH':
+        case 'DELETE':
             if(session?.user.level!=='SUPER_TEACHER'&&session?.user.level!=='TEACHER') return res.status(403).json({ message: 'you dont have the privilege to do this action!' })
-            return res.json(await prisma.task.update({
+            return res.json(await prisma.taskAttachment.delete({
                 where: {
-                    id: String(req.query.taskid)
-                },
-                data: {
-                    title,
-                    instruction,
-                    dueDate: dayjs(dueDate).toDate()
+                    id: attachment.id
                 }
             }))
         default:

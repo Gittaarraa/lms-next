@@ -1,4 +1,4 @@
-import { Button, Divider, Flex, Card, Avatar, Text, Group, Menu, ActionIcon, Modal, Textarea, FileInput } from '@mantine/core'
+import { Button, Divider, Flex, Card, Avatar, Text, Group, Menu, ActionIcon, Modal, Textarea, FileInput, TextInput } from '@mantine/core'
 import { AssignmentAttachment, Kelas, Task, TaskAssignment, TaskAttachment, User } from '@prisma/client'
 import { prisma } from "@/utils/prismaConnect";
 import { GetServerSidePropsContext } from 'next'
@@ -12,6 +12,7 @@ import { AttachmentBody } from '..';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
+import { DatePickerInput } from '@mantine/dates';
 
 export default function Tasks({ kelas }:{ kelas: Kelas & { tasks: (Task & {
   attachment: TaskAttachment[];
@@ -21,6 +22,11 @@ export default function Tasks({ kelas }:{ kelas: Kelas & { tasks: (Task & {
   })[];
 })[]; }|undefined }) {
   const { session } = useContext(DataContext)
+  const [editTaskModal, setEditTaskModal] = useState(false); 
+  const [taskTitleEdit, setTaskTitleEdit] = useInputState("");
+  const [instructionEdit, setInstructionEdit] = useInputState("");
+  const [task, setTask] = useState("");
+  const [timeValue, setTimeValue] = useState<Date | null>(null);
   const router = useRouter()
 
   const deleteTask = (taskid: string) => {
@@ -44,6 +50,52 @@ export default function Tasks({ kelas }:{ kelas: Kelas & { tasks: (Task & {
           message: err.response?.data?.message || err.message,
         })
       );
+  }
+
+  const editTask = async (taskid: string) => {
+    await axios
+      .patch(`/api/classes/${kelas?.id}/tasks/${taskid}`, {
+        title: taskTitleEdit,
+        instruction: instructionEdit,
+        dueDate: timeValue
+      })
+      .then((res) => {
+        showNotification({
+          id: "edit-task-msg",
+          title: "Task Edited Successfully!",
+          color: "green",
+          message: res.data?.message,
+        });
+        setEditTaskModal(false)
+        router.push(String(router.asPath));
+      })
+      .catch((err) =>
+        showNotification({
+          id: "edit-task-msg",
+          title: "Edit Task Failed!",
+          color: "red",
+          message: err.response?.data?.message || err.message,
+        })
+      );
+  };
+
+  const deleteAtt = (taskId: string, attId: string) => {
+    axios.delete(`/api/classes/${kelas?.id}/tasks/${taskId}/attachment/${attId}`).then(()=> {
+        showNotification({
+            id: 'delete-att-msg',
+            title: "Delete Attachment Success!",
+            color: 'green',
+            message: "Attachment Successfully Deleted"
+        })
+        router.replace(router.asPath)
+      }).catch((err)=> {
+        showNotification({
+            id: 'delete-att-msg',
+            title: "Delete Attachment Failed!",
+            color: 'red',
+            message: err.response?.data?.message||'unknown server side error!'
+        })
+    })
   }
 
   return (<>
@@ -124,11 +176,10 @@ export default function Tasks({ kelas }:{ kelas: Kelas & { tasks: (Task & {
                     <Menu.Dropdown>
                       <Menu.Item 
                       component="a" 
-                      // onClick={() => {
-                      //   setEditPostModal(true)
-                      //   setPostIdEdit(post.id)
-                      //   setPostNameEdit(post.sentence)
-                      // }}
+                      onClick={() => {
+                        setEditTaskModal(true)
+                        setTask(task.id)
+                      }}
                       >
                         Edit
                       </Menu.Item>
@@ -144,13 +195,22 @@ export default function Tasks({ kelas }:{ kelas: Kelas & { tasks: (Task & {
           <Group spacing={"sm"}>
             {task.attachment.map((attachment) => (
               <Card
-                component={Link}
-                target={"_blank"}
-                href={`/api/${attachment.file}`}
                 radius={"md"}
                 withBorder
               >
-                <Text>{attachment.file.split("/").pop()}</Text>
+                <Group>
+                  <Text 
+                    component={Link}
+                    target={"_blank"}
+                    href={`/api/${attachment.file}`}>{attachment.file.split("/").pop()}</Text>
+                  <ActionIcon
+                    onClick={() => deleteAtt(task.id, attachment.id)}
+                    size={"lg"}
+                    variant="subtle"
+                  >
+                    <svg width={20} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </ActionIcon>
+                </Group>
               </Card>
             ))}
           </Group>
@@ -163,6 +223,47 @@ export default function Tasks({ kelas }:{ kelas: Kelas & { tasks: (Task & {
       </Card>
     ))}
     </Flex>
+    <Modal
+            size={'xl'}
+            centered
+            opened={editTaskModal}
+            onClose={() => setEditTaskModal(false)}
+        >
+          <Flex direction={"column"} gap={"md"}>
+          <Text size={"lg"}>Edit Task</Text>
+          <TextInput
+            required
+            value={taskTitleEdit}
+            onChange={setTaskTitleEdit}
+            label="Title"
+          />
+          <TextInput
+            required
+            value={instructionEdit}
+            onChange={setInstructionEdit}
+            label="Instruction"
+          />
+          <DatePickerInput
+            label="Due date"
+            placeholder="Pick date"
+            value={timeValue}
+            onChange={setTimeValue}
+            w={'50%'}
+          />
+        </Flex>
+        <Flex align={"flex-end"} justify={"flex-end"} mt={"md"} gap={"sm"}>
+          <Button
+            onClick={() => setEditTaskModal(false)}
+            component="a"
+            variant={"subtle"}
+          >
+            Close
+          </Button>
+          <Button type="submit" onClick={()=>editTask(task)} component="a">
+            Edit
+          </Button>
+        </Flex>
+      </Modal>
   </>)
 }
 

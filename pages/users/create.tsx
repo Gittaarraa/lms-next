@@ -40,6 +40,7 @@ export default function CreateUser() {
     <Head>
         <title>Create - Manage Users</title>
     </Head>
+    {/* Create Users */}
     <Flex direction={'column'} gap={'md'}>
             <Text size={'lg'}>Create User</Text>
             <TextInput required value={usernameInput} onChange={setUsernameInput} label='Username'/>
